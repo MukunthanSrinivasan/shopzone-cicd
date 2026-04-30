@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Search: {{ q }} - ShopZone{% endblock %}
+{% block extra_head %}
+<style>
+.grid-products{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+@media(max-width:900px){.grid-products{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:550px){.grid-products{grid-template-columns:repeat(2,1fr)}}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+  <div style="margin-bottom:1.5rem">
+    <h2 style="font-size:1.3rem">
+      {% if q %}Search results for "<span style="color:#a5b4fc">{{ q }}</span>"{% else %}Search Products{% endif %}
+    </h2>
+    {% if products %}<p style="color:#64748b;font-size:.85rem;margin-top:.3rem">{{ products|length }} results found</p>{% endif %}
+  </div>
+  {% if products %}
+  <div class="grid-products">
+    {% for p in products %}
+    <div class="product-card">
+      <div class="product-img">{{ p.image_emoji }}
+        {% if p.badge %}<span class="product-badge badge-{{ p.badge|lower }}">{{ p.badge }}</span>{% endif %}
+      </div>
+      <div class="product-info">
+        <div class="product-name">{{ p.name }}</div>
+        <div class="product-desc">{{ p.description }}</div>
+        <div class="product-rating"><span class="stars">★★★★★</span> {{ p.rating }} ({{ p.reviews }})</div>
+        <div class="product-price">
+          <span class="price-new">₹{{ "{:,.0f}".format(p.price) }}</span>
+          {% if p.original_price %}<span class="price-old">₹{{ "{:,.0f}".format(p.original_price) }}</span>{% endif %}
+        </div>
+        <form method="POST" action="/cart/add/{{ p.id }}">
+          <button type="submit" class="btn-cart">Add to Cart</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% elif q %}
+  <div style="text-align:center;padding:3rem;color:#475569">
+    <p style="font-size:1.1rem;margin-bottom:.5rem">No results for "{{ q }}"</p>
+    <p style="font-size:.85rem">Try searching for: phones, laptops, PS5, AirPods, MacBook</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

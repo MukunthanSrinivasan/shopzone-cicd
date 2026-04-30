@@ -1,0 +1,65 @@
+pipeline {
+    agent any
+    environment {
+        AWS_DEFAULT_REGION = 'us-east-1'
+    }
+    stages {
+        stage('1. Clone Repository') {
+            steps {
+                echo '=== Stage 1: Pulling Code from GitHub ==='
+                git branch: 'main', url: 'https://github.com/MukunthanSrinivasan/shopzone-cicd.git'
+            }
+        }
+        stage('2. Terraform - Provision AWS Infrastructure') {
+            steps {
+                echo '=== Stage 2: Provisioning AWS Infrastructure with Terraform ==='
+                withCredentials([
+                    string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
+                    bat '''
+                        set AWS_ACCESS_KEY_ID=%AWS_ACCESS_KEY_ID%
+                        set AWS_SECRET_ACCESS_KEY=%AWS_SECRET_ACCESS_KEY%
+                        set AWS_DEFAULT_REGION=us-east-1
+                        cd terraform
+                        terraform init -reconfigure
+                        terraform apply -auto-approve
+                        terraform output -raw instance_public_ip > ../ec2_ip.txt
+                        echo EC2 IP:
+                        type ../ec2_ip.txt
+                    '''
+                }
+            }
+        }
+        stage('3. Wait for EC2 to be Ready') {
+            steps {
+                echo '=== Stage 3: Waiting for EC2 to initialize ==='
+                bat 'ping -n 60 127.0.0.1 > nul'
+            }
+        }
+        stage('4. Deploy Application') {
+            steps {
+                echo '=== Stage 4: Deploying ShopZone to AWS EC2 ==='
+                bat '''
+                    set /p EC2_IP=<ec2_ip.txt
+                    echo Deploying to %EC2_IP%
+                    scp -o StrictHostKeyChecking=no -i C:\\jenkins\\shopzone-key.pem -r app ubuntu@%EC2_IP%:~/
+                    ssh -o StrictHostKeyChecking=no -i C:\\jenkins\\shopzone-key.pem ubuntu@%EC2_IP% "cd ~/app && pip3 install flask gunicorn --break-system-packages && nohup gunicorn --bind 0.0.0.0:5000 app:app > app.log 2>&1 &"
+                    echo ShopZone deployed at http://%EC2_IP%:5000
+                '''
+            }
+        }
+    }
+    post {
+        success {
+            echo '=========================================='
+            echo 'SHOPZONE DEPLOYED SUCCESSFULLY!'
+            echo '=========================================='
+        }
+        failure {
+            echo '=========================================='
+            echo 'DEPLOYMENT FAILED - CHECK LOGS ABOVE'
+            echo '=========================================='
+        }
+    }
+}

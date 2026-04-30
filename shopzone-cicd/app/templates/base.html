@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}ShopZone{% endblock %}</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0a0a0f;color:#e2e8f0;min-height:100vh}
+a{text-decoration:none;color:inherit}
+
+/* NAV */
+.nav{background:#0f0f1a;border-bottom:1px solid #1e1e3a;position:sticky;top:0;z-index:100}
+.nav-inner{max-width:1200px;margin:0 auto;padding:.8rem 1.5rem;display:flex;align-items:center;gap:1rem}
+.logo{font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex-shrink:0}
+.search-bar{flex:1;display:flex;gap:0;max-width:500px}
+.search-bar input{flex:1;background:#1e1e3a;border:1px solid #2d2d5a;border-right:none;border-radius:8px 0 0 8px;padding:.55rem 1rem;color:#e2e8f0;font-size:.9rem;outline:none}
+.search-bar input:focus{border-color:#6366f1}
+.search-bar button{background:#6366f1;border:none;border-radius:0 8px 8px 0;padding:.55rem 1.1rem;color:#fff;cursor:pointer;font-size:.85rem;font-weight:600}
+.nav-links{display:flex;align-items:center;gap:.6rem;flex-shrink:0}
+.nav-links a{color:#94a3b8;font-size:.85rem;padding:.4rem .7rem;border-radius:6px;transition:all .2s;white-space:nowrap}
+.nav-links a:hover{background:#1e1e3a;color:#e2e8f0}
+.btn-login{background:#1e1e3a;border:1px solid #2d2d5a;border-radius:8px;padding:.4rem .9rem;color:#94a3b8;font-size:.85rem;cursor:pointer;transition:all .2s}
+.btn-login:hover{border-color:#6366f1;color:#6366f1}
+.btn-signup{background:#6366f1;border:none;border-radius:8px;padding:.4rem .9rem;color:#fff;font-size:.85rem;cursor:pointer;font-weight:600;transition:all .2s}
+.btn-signup:hover{background:#4f46e5}
+.cart-btn{background:#1e1e3a;border:1px solid #2d2d5a;border-radius:8px;padding:.4rem .9rem;color:#e2e8f0;font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:all .2s}
+.cart-btn:hover{border-color:#6366f1}
+.cart-badge{background:#ef4444;color:#fff;border-radius:20px;padding:.1rem .45rem;font-size:.7rem;font-weight:700}
+
+/* CATEGORIES BAR */
+.cat-bar{background:#0f0f1a;border-bottom:1px solid #1e1e3a;padding:.5rem 0}
+.cat-inner{max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none}
+.cat-inner::-webkit-scrollbar{display:none}
+.cat-pill{background:#1e1e3a;border:1px solid #2d2d5a;border-radius:20px;padding:.35rem .9rem;font-size:.8rem;color:#94a3b8;white-space:nowrap;transition:all .2s;cursor:pointer}
+.cat-pill:hover,.cat-pill.active{background:#6366f120;border-color:#6366f1;color:#a5b4fc}
+
+/* FLASH */
+.flash{max-width:1200px;margin:.8rem auto 0;padding:0 1.5rem}
+.flash-msg{padding:.7rem 1rem;border-radius:8px;font-size:.85rem;margin-bottom:.5rem}
+.flash-success{background:#16a34a20;border:1px solid #16a34a40;color:#4ade80}
+.flash-error{background:#ef444420;border:1px solid #ef444440;color:#fca5a5}
+
+/* CONTAINER */
+.container{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
+
+/* PRODUCT CARD */
+.product-card{background:#0f0f1a;border:1px solid #1e1e3a;border-radius:12px;overflow:hidden;transition:all .2s;cursor:pointer}
+.product-card:hover{border-color:#6366f150;transform:translateY(-2px)}
+.product-img{background:#1a1a2e;height:160px;display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative}
+.product-badge{position:absolute;top:.5rem;left:.5rem;background:#ef4444;color:#fff;border-radius:4px;padding:.15rem .5rem;font-size:.65rem;font-weight:700}
+.badge-hot{background:#ef4444}
+.badge-new{background:#6366f1}
+.badge-sale{background:#f59e0b}
+.badge-gaming{background:#10b981}
+.badge-budget{background:#06b6d4}
+.badge-premium{background:#8b5cf6}
+.badge-business{background:#3b82f6}
+.badge-android{background:#84cc16}
+.product-info{padding:1rem}
+.product-name{font-size:.9rem;font-weight:600;margin-bottom:.3rem;line-height:1.3}
+.product-desc{font-size:.75rem;color:#64748b;margin-bottom:.6rem;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.product-rating{display:flex;align-items:center;gap:.3rem;font-size:.75rem;color:#94a3b8;margin-bottom:.6rem}
+.stars{color:#fbbf24}
+.product-price{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.8rem}
+.price-new{font-size:1.1rem;font-weight:700;color:#f1f5f9}
+.price-old{font-size:.8rem;color:#64748b;text-decoration:line-through}
+.price-off{font-size:.75rem;color:#4ade80;font-weight:600}
+.btn-cart{width:100%;background:#6366f1;border:none;border-radius:8px;padding:.6rem;color:#fff;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-cart:hover{background:#4f46e5}
+
+/* SECTION HEADER */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+.section-title{font-size:1.3rem;font-weight:700}
+.view-all{color:#6366f1;font-size:.85rem;font-weight:600}
+.view-all:hover{text-decoration:underline}
+
+/* FOOTER */
+footer{background:#0f0f1a;border-top:1px solid #1e1e3a;padding:2rem 1.5rem;margin-top:3rem;text-align:center;color:#475569;font-size:.8rem}
+footer span{color:#6366f1;font-weight:600}
+</style>
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="logo">ShopZone</a>
+    <form class="search-bar" action="/search" method="GET">
+      <input type="text" name="q" placeholder="Search phones, laptops, gaming..." value="{{ request.args.get('q','') }}">
+      <button type="submit">Search</button>
+    </form>
+    <div class="nav-links">
+      {% if session.get('user_id') %}
+        <span style="color:#94a3b8;font-size:.85rem">Hi, {{ session.user_name.split()[0] }}</span>
+        <a href="/cart" class="cart-btn">
+          🛒 Cart {% if cart_count %}<span class="cart-badge">{{ cart_count }}</span>{% endif %}
+        </a>
+        <a href="/logout" class="btn-login">Logout</a>
+      {% else %}
+        <a href="/login" class="btn-login">Login</a>
+        <a href="/signup" class="btn-signup">Sign Up</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<div class="cat-bar">
+  <div class="cat-inner">
+    <a href="/" class="cat-pill {% if request.path=='/' %}active{% endif %}">🏠 Home</a>
+    <a href="/category/phones" class="cat-pill {% if 'phones' in request.path %}active{% endif %}">📱 Phones</a>
+    <a href="/category/laptops" class="cat-pill {% if 'laptops' in request.path %}active{% endif %}">💻 Laptops</a>
+    <a href="/category/gaming" class="cat-pill {% if 'gaming' in request.path %}active{% endif %}">🎮 Gaming</a>
+    <a href="/category/airpods" class="cat-pill {% if 'airpods' in request.path %}active{% endif %}">🎧 Earbuds</a>
+    <a href="/category/tablets" class="cat-pill {% if 'tablets' in request.path %}active{% endif %}">📲 iPads & Tablets</a>
+    <a href="/category/accessories" class="cat-pill {% if 'accessories' in request.path %}active{% endif %}">⌚ Accessories</a>
+  </div>
+</div>
+
+<div class="flash">
+  {% for category, message in get_flashed_messages(with_categories=True) %}
+    <div class="flash-msg flash-{{ category }}">{{ message }}</div>
+  {% endfor %}
+</div>
+
+{% block content %}{% endblock %}
+
+<footer>
+  <p><span>ShopZone</span> &bull; Deployed on AWS EC2 &bull; CI/CD via Jenkins &bull; Terraform &bull; Docker &bull; Built for DevOps Project 2025</p>
+</footer>
+</body>
+</html>

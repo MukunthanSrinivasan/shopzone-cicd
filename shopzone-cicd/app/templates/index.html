@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+{% block title %}ShopZone - Best Deals on Electronics{% endblock %}
+{% block extra_head %}
+<style>
+.hero{background:linear-gradient(135deg,#0f0f1a 0%,#1a1a3a 50%,#0f0f1a 100%);border-bottom:1px solid #1e1e3a;padding:3rem 1.5rem;text-align:center}
+.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:.8rem;line-height:1.2}
+.hero h1 span{background:linear-gradient(135deg,#6366f1,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:#94a3b8;font-size:1.05rem;margin-bottom:1.5rem}
+.hero-btns{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+.hero-btn-primary{background:#6366f1;color:#fff;border:none;border-radius:10px;padding:.8rem 2rem;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s}
+.hero-btn-primary:hover{background:#4f46e5;transform:translateY(-1px)}
+.hero-btn-secondary{background:transparent;color:#e2e8f0;border:1px solid #334155;border-radius:10px;padding:.8rem 2rem;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s}
+.hero-btn-secondary:hover{border-color:#6366f1;color:#a5b4fc}
+.hero-stats{display:flex;gap:2rem;justify-content:center;margin-top:2rem;flex-wrap:wrap}
+.hero-stat .num{font-size:1.5rem;font-weight:800;color:#a5b4fc}
+.hero-stat .lbl{font-size:.75rem;color:#64748b;margin-top:2px}
+
+.offers-banner{background:linear-gradient(135deg,#7c3aed20,#6366f120);border:1px solid #6366f130;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem}
+.offers-text h3{font-size:1.1rem;font-weight:700;color:#a78bfa}
+.offers-text p{font-size:.82rem;color:#94a3b8;margin-top:.2rem}
+.countdown{display:flex;gap:.8rem}
+.count-box{background:#1e1e3a;border-radius:8px;padding:.4rem .7rem;text-align:center;min-width:52px}
+.count-box .num{font-size:1.2rem;font-weight:700;color:#a78bfa}
+.count-box .lbl{font-size:.6rem;color:#64748b;text-transform:uppercase}
+
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:.8rem}
+.section{margin-bottom:3rem}
+
+@media(max-width:900px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-6{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:550px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-6{grid-template-columns:repeat(2,1fr)}.hero h1{font-size:1.8rem}}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<div class="hero">
+  <div style="max-width:700px;margin:0 auto">
+    <h1>Shop the Latest <span>Tech & Gadgets</span></h1>
+    <p>Phones, Laptops, Gaming, AirPods, iPads & more — with the best prices guaranteed</p>
+    <div class="hero-btns">
+      <a href="/category/phones"><button class="hero-btn-primary">Shop Now</button></a>
+      <a href="/category/gaming"><button class="hero-btn-secondary">Gaming Deals</button></a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">500+</div><div class="lbl">Products</div></div>
+      <div class="hero-stat"><div class="num">50K+</div><div class="lbl">Happy Customers</div></div>
+      <div class="hero-stat"><div class="num">Free</div><div class="lbl">Delivery above ₹999</div></div>
+      <div class="hero-stat"><div class="num">24/7</div><div class="lbl">Support</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- OFFERS BANNER -->
+  <div class="offers-banner">
+    <div class="offers-text">
+      <h3>Flash Sale — Up to 40% OFF!</h3>
+      <p>Limited time deals on top brands. Grab them before they're gone.</p>
+    </div>
+    <div class="countdown" id="countdown">
+      <div class="count-box"><div class="num" id="ch">08</div><div class="lbl">Hours</div></div>
+      <div class="count-box"><div class="num" id="cm">45</div><div class="lbl">Mins</div></div>
+      <div class="count-box"><div class="num" id="cs">00</div><div class="lbl">Secs</div></div>
+    </div>
+  </div>
+
+  <!-- HOT DEALS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">🔥 Hot Deals</div>
+      <a href="/search?q=sale" class="view-all">View all →</a>
+    </div>
+    <div class="grid-6">
+      {% for p in offers %}
+      <div class="product-card">
+        <div class="product-img">
+          {{ p.image_emoji }}
+          {% if p.badge %}<span class="product-badge badge-{{ p.badge|lower }}">{{ p.badge }}</span>{% endif %}
+        </div>
+        <div class="product-info">
+          <div class="product-name">{{ p.name }}</div>
+          <div class="product-price">
+            <span class="price-new">₹{{ "{:,.0f}".format(p.price) }}</span>
+            {% if p.original_price %}<span class="price-old">₹{{ "{:,.0f}".format(p.original_price) }}</span>{% endif %}
+          </div>
+          <form method="POST" action="/cart/add/{{ p.id }}">
+            <button type="submit" class="btn-cart">Add to Cart</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- PHONES -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">📱 Smartphones</div>
+      <a href="/category/phones" class="view-all">View all →</a>
+    </div>
+    <div class="grid-4">
+      {% for p in phones %}
+      <div class="product-card">
+        <div class="product-img">
+          {{ p.image_emoji }}
+          {% if p.badge %}<span class="product-badge badge-{{ p.badge|lower }}">{{ p.badge }}</span>{% endif %}
+        </div>
+        <div class="product-info">
+          <div class="product-name">{{ p.name }}</div>
+          <div class="product-desc">{{ p.description }}</div>
+          <div class="product-rating"><span class="stars">★★★★★</span> {{ p.rating }} ({{ p.reviews }})</div>
+          <div class="product-price">
+            <span class="price-new">₹{{ "{:,.0f}".format(p.price) }}</span>
+            {% if p.original_price %}
+            <span class="price-old">₹{{ "{:,.0f}".format(p.original_price) }}</span>
+            <span class="price-off">{{ ((1 - p.price/p.original_price)*100)|int }}% off</span>
+            {% endif %}
+          </div>
+          <form method="POST" action="/cart/add/{{ p.id }}">
+            <button type="submit" class="btn-cart">Add to Cart</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- LAPTOPS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">💻 Laptops</div>
+      <a href="/category/laptops" class="view-all">View all →</a>
+    </div>
+    <div class="grid-4">
+      {% for p in laptops %}
+      <div class="product-card">
+        <div class="product-img">{{ p.image_emoji }}
+          {% if p.badge %}<span class="product-badge badge-{{ p.badge|lower }}">{{ p.badge }}</span>{% endif %}
+        </div>
+        <div class="product-info">
+          <div class="product-name">{{ p.name }}</div>
+          <div class="product-desc">{{ p.description }}</div>
+          <div class="product-rating"><span class="stars">★★★★★</span> {{ p.rating }} ({{ p.reviews }})</div>
+          <div class="product-price">
+            <span class="price-new">₹{{ "{:,.0f}".format(p.price) }}</span>
+            {% if p.original_price %}<span class="price-old">₹{{ "{:,.0f}".format(p.original_price) }}</span>{% endif %}
+          </div>
+          <form method="POST" action="/cart/add/{{ p.id }}">
+            <button type="submit" class="btn-cart">Add to Cart</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- GAMING -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">🎮 Gaming Consoles</div>
+      <a href="/category/gaming" class="view-all">View all →</a>
+    </div>
+    <div class="grid-4">
+      {% for p in gaming %}
+      <div class="product-card">
+        <div class="product-img">{{ p.image_emoji }}
+          {% if p.badge %}<span class="product-badge badge-{{ p.badge|lower }}">{{ p.badge }}</span>{% endif %}
+        </div>
+        <div class="product-info">
+          <div class="product-name">{{ p.name }}</div>
+          <div class="product-desc">{{ p.description }}</div>
+          <div class="product-rating"><span class="stars">★★★★★</span> {{ p.rating }} ({{ p.reviews }})</div>
+          <div class="product-price">
+            <span class="price-new">₹{{ "{:,.0f}".format(p.price) }}</span>
+            {% if p.original_price %}<span class="price-old">₹{{ "{:,.0f}".format(p.original_price) }}</span>{% endif %}
+          </div>
+          <form method="POST" action="/cart/add/{{ p.id }}">
+            <button type="submit" class="btn-cart">Add to Cart</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- AIRPODS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">🎧 Earbuds & AirPods</div>
+      <a href="/category/airpods" class="view-all">View all →</a>
+    </div>
+    <div class="grid-4">
+      {% for p in airpods %}
+      <div class="product-card">
+        <div class="product-img">{{ p.image_emoji }}
+          {% if p.badge %}<span class="product-badge badge-{{ p.badge|lower }}">{{ p.badge }}</span>{% endif %}
+        </div>
+        <div class="product-info">
+          <div class="product-name">{{ p.name }}</div>
+          <div class="product-desc">{{ p.description }}</div>
+          <div class="product-rating"><span class="stars">★★★★★</span> {{ p.rating }} ({{ p.reviews }})</div>
+          <div class="product-price">
+            <span class="price-new">₹{{ "{:,.0f}".format(p.price) }}</span>
+            {% if p.original_price %}<span class="price-old">₹{{ "{:,.0f}".format(p.original_price) }}</span>{% endif %}
+          </div>
+          <form method="POST" action="/cart/add/{{ p.id }}">
+            <button type="submit" class="btn-cart">Add to Cart</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- TABLETS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">📲 iPads & Tablets</div>
+      <a href="/category/tablets" class="view-all">View all →</a>
+    </div>
+    <div class="grid-4">
+      {% for p in tablets %}
+      <div class="product-card">
+        <div class="product-img">{{ p.image_emoji }}
+          {% if p.badge %}<span class="product-badge badge-{{ p.badge|lower }}">{{ p.badge }}</span>{% endif %}
+        </div>
+        <div class="product-info">
+          <div class="product-name">{{ p.name }}</div>
+          <div class="product-desc">{{ p.description }}</div>
+          <div class="product-rating"><span class="stars">★★★★★</span> {{ p.rating }} ({{ p.reviews }})</div>
+          <div class="product-price">
+            <span class="price-new">₹{{ "{:,.0f}".format(p.price) }}</span>
+            {% if p.original_price %}<span class="price-old">₹{{ "{:,.0f}".format(p.original_price) }}</span>{% endif %}
+          </div>
+          <form method="POST" action="/cart/add/{{ p.id }}">
+            <button type="submit" class="btn-cart">Add to Cart</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Countdown timer
+let h=8,m=45,s=0;
+function tick(){
+  s--; if(s<0){s=59;m--;} if(m<0){m=59;h--;} if(h<0){h=23;m=59;s=59;}
+  document.getElementById('ch').textContent=String(h).padStart(2,'0');
+  document.getElementById('cm').textContent=String(m).padStart(2,'0');
+  document.getElementById('cs').textContent=String(s).padStart(2,'0');
+}
+setInterval(tick,1000);
+</script>
+{% endblock %}

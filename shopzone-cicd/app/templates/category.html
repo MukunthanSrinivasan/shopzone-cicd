@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ cat_name }} - ShopZone{% endblock %}
+{% block extra_head %}
+<style>
+.cat-hero{background:#0f0f1a;border-bottom:1px solid #1e1e3a;padding:1.5rem;text-align:center}
+.cat-hero h1{font-size:1.8rem;font-weight:800;margin-bottom:.3rem}
+.cat-hero p{color:#64748b;font-size:.9rem}
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.8rem}
+.result-count{color:#64748b;font-size:.85rem}
+.sort-bar{display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:#94a3b8}
+.sort-bar select{background:#1e1e3a;border:1px solid #2d2d5a;border-radius:8px;padding:.4rem .8rem;color:#e2e8f0;font-size:.85rem;cursor:pointer}
+.grid-products{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+@media(max-width:900px){.grid-products{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:550px){.grid-products{grid-template-columns:repeat(2,1fr)}}
+</style>
+{% endblock %}
+{% block content %}
+<div class="cat-hero">
+  <h1>{{ cat_name }}</h1>
+  <p>{{ products|length }} products available</p>
+</div>
+<div class="container">
+  <div class="toolbar">
+    <div class="result-count">Showing {{ products|length }} results</div>
+    <div class="sort-bar">
+      Sort by:
+      <form method="GET">
+        <select name="sort" onchange="this.form.submit()">
+          <option value="default" {% if sort=='default' %}selected{% endif %}>Featured</option>
+          <option value="price_asc" {% if sort=='price_asc' %}selected{% endif %}>Price: Low to High</option>
+          <option value="price_desc" {% if sort=='price_desc' %}selected{% endif %}>Price: High to Low</option>
+          <option value="rating" {% if sort=='rating' %}selected{% endif %}>Top Rated</option>
+        </select>
+      </form>
+    </div>
+  </div>
+  <div class="grid-products">
+    {% for p in products %}
+    <div class="product-card">
+      <div class="product-img">{{ p.image_emoji }}
+        {% if p.badge %}<span class="product-badge badge-{{ p.badge|lower }}">{{ p.badge }}</span>{% endif %}
+      </div>
+      <div class="product-info">
+        <div class="product-name">{{ p.name }}</div>
+        <div class="product-desc">{{ p.description }}</div>
+        <div class="product-rating"><span class="stars">★★★★★</span> {{ p.rating }} ({{ p.reviews }} reviews)</div>
+        <div class="product-price">
+          <span class="price-new">₹{{ "{:,.0f}".format(p.price) }}</span>
+          {% if p.original_price %}
+          <span class="price-old">₹{{ "{:,.0f}".format(p.original_price) }}</span>
+          <span class="price-off">{{ ((1 - p.price/p.original_price)*100)|int }}% off</span>
+          {% endif %}
+        </div>
+        <form method="POST" action="/cart/add/{{ p.id }}">
+          <button type="submit" class="btn-cart">Add to Cart</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
