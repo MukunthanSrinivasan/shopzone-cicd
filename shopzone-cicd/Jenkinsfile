@@ -21,11 +21,11 @@ pipeline {
                         export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
                         export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
                         export AWS_DEFAULT_REGION=us-east-1
-                        cd terraform
+                        cd shopzone-cicd/terraform
                         terraform init -reconfigure
                         terraform apply -auto-approve
-                        terraform output -raw instance_public_ip > ../ec2_ip.txt
-                        echo "EC2 IP: $(cat ../ec2_ip.txt)"
+                        terraform output -raw instance_public_ip > ../../ec2_ip.txt
+                        echo "EC2 IP: $(cat ../../ec2_ip.txt)"
                     '''
                 }
             }
@@ -42,7 +42,7 @@ pipeline {
                 sh '''
                     EC2_IP=$(cat ec2_ip.txt)
                     echo "Deploying to $EC2_IP"
-                    scp -o StrictHostKeyChecking=no -i /home/ubuntu/shopzone-key.pem -r app ubuntu@$EC2_IP:~/
+                    scp -o StrictHostKeyChecking=no -i /home/ubuntu/shopzone-key.pem -r shopzone-cicd/app ubuntu@$EC2_IP:~/
                     ssh -o StrictHostKeyChecking=no -i /home/ubuntu/shopzone-key.pem ubuntu@$EC2_IP "cd ~/app && pip3 install flask gunicorn --break-system-packages && nohup gunicorn --bind 0.0.0.0:5000 app:app > app.log 2>&1 &"
                     echo "ShopZone deployed at http://$EC2_IP:5000"
                 '''
