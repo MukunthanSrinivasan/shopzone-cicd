@@ -106,7 +106,6 @@ resource "aws_instance" "shopzone_server" {
     apt-get update -y
     apt-get install -y python3-pip python3-venv git curl
     mkdir -p /data
-    echo "Server ready" > /tmp/ready.txt
   EOF
 
   tags = { Name = "shopzone-app-server" }
